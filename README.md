@@ -1,0 +1,2 @@
+# Haskell-Funcional
+Paradigma Funcional
