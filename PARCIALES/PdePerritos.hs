@@ -57,12 +57,6 @@ guarderiaSinSpa = UnaGuarderia {
     rutina = [actividadJugar, actividadLadrar, actividadRegalarPelota, actividadDiaDeCampo]
 }
 
--- jugar :: Ejercicio
--- jugar perrito = perrito {energia = max 0 (energia perrito - 10)}  
-
--- jugar :: Ejercicio
--- jugar perrito = perrito {energia = max 0 . (subtract 10) . energia $ perrito} 
-
 jugar :: Ejercicio
 jugar perrito = mapEnergia (subtract 10) perrito
 
@@ -71,9 +65,6 @@ actividadJugar = UnaActividad {
     ejercicio = jugar,
     duracion = 30
 }
-
--- ladrar :: Int -> Ejercicio
--- ladrar ladridos perrito = perrito {energia = (+ (div ladridos 2)) . energia $ perrito}
 
 ladrar :: Int -> Ejercicio
 ladrar ladridos perrito = mapEnergia (+ (div ladridos 2)) perrito 
@@ -84,17 +75,8 @@ actividadLadrar = UnaActividad {
     duracion = 20
 }
 
--- ladrar :: Int -> Ejercicio
--- ladrar ladridos perrito = perrito {energia = (+ energia perrito) . flip div 2 $ ladridos}
-
 mapEnergia :: (Int -> Int) -> Ejercicio
 mapEnergia modificacion perrito = perrito {energia = max 0 . modificacion . energia $ perrito}
-
--- regalar :: Juguete -> Ejercicio
--- regalar juguete perrito = perrito {juguetesFavoritos = [juguetesFavoritos perrito ++ [juguete]}
-
--- regalar :: Juguete -> Ejercicio
--- regalar juguete perrito = mapJuguetes ((:) juguete) perrito
 
 regalar :: Juguete -> Ejercicio
 regalar juguete perrito = mapJuguetes (juguete:) perrito
@@ -127,14 +109,6 @@ actividadDiaDeSpa = UnaActividad {
     duracion = 120
 }
 
--- Solucion artesanal mia: 
--- esExtravagante :: Perrito -> Bool
--- esExtravagante perrito = ((== "dalmata").raza $ perrito) || ((== "pomerania").raza $ perrito)
-
--- SOLUCION ALTERNATIVA CON ELEM
--- esExtravaganteAlternativo :: Perrito -> Bool
--- esExtravaganteAlternativo perrito = elem (raza perrito) ["dalmata", "pomerania"] 
-
 diaDeCampo :: Ejercicio
 diaDeCampo perrito = jugar . mapJuguetes (drop 1) $ perrito
 
@@ -143,12 +117,6 @@ actividadDiaDeCampo = UnaActividad {
     ejercicio = diaDeCampo,
     duracion = 720
 }
-
-{- Tambien funcionaria esto: 
-   diaDeCampo :: Ejercicio
-   diaDeCampo perrito = mapJuguetes (drop 1) . jugar $ perrito -}
-
--- PARTE B
 
 puedeEstarEnGuarderia :: Perrito -> Guarderia -> Bool
 puedeEstarEnGuarderia unPerrito unaGuarderia = (> tiempoRutina unaGuarderia).tiempoEnGuarderia $ unPerrito
@@ -176,13 +144,8 @@ perrosCansados unosPerritos unaGuarderia = filter estaCansado (map (rutinaDeGuar
 estaCansado :: Perrito -> Bool
 estaCansado unPerrito = (<5) . energia $ unPerrito
 
--- perrosCansados2 :: [Perrito] -> Guarderia -> [Perrito]
--- perrosCansados2 unosPerritos unaGuarderia = (filter estaCansado) . map (rutinaDeGuarderia unaGuarderia) $ unosPerritos
-
 verEnergias :: [Perrito] -> Guarderia -> [Int]
 verEnergias perritos guarderia = map (energia . rutinaDeGuarderia guarderia) perritos
-
--- Parte C
 
 sogasInfinitas :: [String]
 sogasInfinitas = map nombrarSoguita [1..]
@@ -197,39 +160,4 @@ pi = UnPerrito {
     tiempoEnGuarderia = 314,
     energia = 159
 }
-
--- 1. ghci> esPerroExtravagante pi
--- Devuelve `False`.
--- Se puede porque evalúo solo la raza
-
--- 2.a ghci> tieneJuguete "Huesito" pi
--- *Depende*
-
--- No termina nunca porque tiene que trabajar con
--- la lista infinita entera para ver si alguno de
--- los elementos es "Huesito" y tiene infinitos jugutes *antes*.
--- En realidad depende de si le regalamos un huesito
--- antes de consultar porque la función solo puede terminar
--- cuando encuentra "Huesito" como elemento de la lista y al regalar
--- estoy poniendo al nuevo juguete como cabeza.
-
--- 2.b ghci> tieneJuguete "Pelota" . hacerRutinaDeGuarderia guarderia $ pi
--- Al hacer la rutina de la guardería se le regala una pelota
--- cuando recibe la pelota esta queda como primer elemento de la lista
--- y por eso la función puede terminar.
-
--- 2.c ghci>
-
--- ghci> tieneJuguete "Soguita 31112" pi
--- Devuelve `True`.
-
--- ghci> hacerRutinaDeGuarderia guarderia $ perroPi
--- La puede hacer (le cambia la energía y
--- otras cosas pero al mostrarlo por consola no va a
--- terminar de mostrar nunca).
-
--- ghci> regalar "Hueso" perroPi
--- Lo podemos hacer pero no se va a terminar de mostrar
--- al perro por consola.
-
 
